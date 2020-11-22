@@ -209,7 +209,7 @@ void restore_fd(int temp_stdin, int temp_stdout)
 void call_to_certian_helper(char* prog_name, enum POLY_TYPE polyType)
 {
 	close(0);
-	int fileToRead = open_file_by_polygon_type(polyType);
+	open_file_by_polygon_type(polyType);
 	close(1);
 	open_file(ALL_OUT);
 
