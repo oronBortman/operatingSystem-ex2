@@ -13,7 +13,7 @@
 #include <time.h>
 #include <signal.h>
 
-  char * prog_name = "hello";
+char * prog_name = "hello";
 // *****   declarations of types and constants   *****
 char* out_msg = "Hello Standard Output\n";
 char* err_msg = "Hello Standard Error\n";

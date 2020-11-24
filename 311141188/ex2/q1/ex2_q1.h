@@ -8,7 +8,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <math.h>
-#include "LinkedList.h"
+#include "common_functions.h"
 
 // *****   declarations of types and constants   *****
 
@@ -35,14 +35,12 @@ void write_instruction_to_file(int fileToWrite, char* instructionLine, int intru
 void setFilesToIgnore(enum POLY_TYPE polyType, int * firstFileToIgnore, int * secondFileToIgnore, int quadIn, int hexIn, int octIn);
 void get_input_and_write_to_files(int quadIn, int hexIn, int octIn);
 int open_file_by_polygon_type(enum POLY_TYPE polyType);
-void restore_fd(int temp_stdin, int temp_stdout);
 void open_all_files(int* quadIn, int* hexIn, int* octIn);
 void close_all_files(int quadIn, int hexIn, int octIn);
 
 // *****   declarations of signal functions prototypes   *****
-void handle_SIGUSR1(int sig_num);
-void handle_SIGUSR2(int sig_num);
 void set_sig_handlers();
+void sending_signal_SIGUSR1_to_process(int i, int* pids);
 void handle_char_signals(int * pids);
 void send_SIGUSR2_to_all_processes(int* pids);
 void wait_to_all_processes(int* pids);

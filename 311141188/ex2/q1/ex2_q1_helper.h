@@ -8,7 +8,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <math.h>
-#include "LinkedList.h"
+#include "common_functions.h"
 
 // *****   declarations of types and constants   *****
 
@@ -32,8 +32,8 @@ void print_point(struct point pt);
 void print_polygon_list();
 
 // *****   declarations of signal prototypes   *****
-void handle_SIGUSR1(int sig_num);
-void handle_SIGUSR2(int sig_num);
+void SIGUSR1_handler(int sig_num);
+void SIGUSR2_handler(int sig_num);
 void set_sig_handlers();
 
 

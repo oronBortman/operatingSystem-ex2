@@ -7,7 +7,7 @@
 //global variables
 int numOfPolygonCreated;
 int numOfPolygonPrinted;
-struct Node* currNode;
+struct Node* currNode = NULL;
 struct LinkedList linkedList;
 
 //-----------------------------------------------
@@ -135,24 +135,27 @@ int main()
 
 //-------------------------------------------------------
 
-void handle_SIGUSR1(int sig_num) {
+void SIGUSR1_handler(int sig_num) {
 	if(currNode != NULL)
     {
         print_poloygon(*(currNode->poly));
+		fflush(NULL);
         currNode=currNode->next;
     } 
 	else
 	{
 		currNode = linkedList.head;
 		print_poloygon(*(currNode->poly));
+		fflush(NULL);
 		currNode=currNode->next;
 	}
 	numOfPolygonPrinted++;
 }
 //-------------------------------------------------------
 
-void handle_SIGUSR2(int sig_num){
+void SIGUSR2_handler(int sig_num){
 	  print_helper_end_msg(numOfPolygonCreated,numOfPolygonPrinted,linkedList.head->poly->poly_type);
+	  free_list(linkedList);
 	  exit(0);
 }
 //-------------------------------------------------------
@@ -164,10 +167,16 @@ void set_sig_handlers()
     	perror("Failed to sigemptyset");
 	}
 	act.sa_flags = SA_RESTART;
-	act.sa_handler = handle_SIGUSR1;
-	sigaction(SIGUSR1, &act, NULL);
-	act.sa_handler = handle_SIGUSR2;
-	sigaction(SIGUSR2, &act, NULL);
+	act.sa_handler = SIGUSR1_handler;
+	if (sigaction(SIGUSR1, &act, NULL) == -1)
+	{
+    	perror("Failed to sigaction");
+	}
+	act.sa_handler = SIGUSR2_handler;
+	if (sigaction(SIGUSR2, &act, NULL) == -1)
+	{
+		perror("Failed to sigaction");
+	}
 }
 
 

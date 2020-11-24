@@ -161,7 +161,6 @@ int main()
 	set_sig_handlers();
 	get_input_and_write_to_files(quadIn, hexIn, octIn);
 	close_all_files(quadIn, hexIn, octIn);
-	//call_to_all_helpers(&pid1, &pid2, &pid3);
 	call_to_all_helpers(pids);
 	handle_char_signals(pids);
 	send_SIGUSR2_to_all_processes(pids);
@@ -191,19 +190,10 @@ void call_to_all_helpers(int * pids)
 		if((pids[i] = fork()) == 0)
 		{
 			call_to_certian_helper(prog_name, polyTypes[i]);
-			restore_fd(temp_stdin, temp_stdout);
 		}
 	}
 }
-//------------------------------------------------
 
-void restore_fd(int temp_stdin, int temp_stdout)
-{
-	close(0);
-	dup(temp_stdin);
-	close(1);
-	dup(temp_stdout);
-}
 //------------------------------------------------
 
 void call_to_certian_helper(char* prog_name, enum POLY_TYPE polyType)
@@ -245,17 +235,6 @@ int open_file_by_polygon_type(enum POLY_TYPE polyType)
 
 //-------------------------------------------------------
 
-void handle_SIGUSR1(int sig_num) {
-   printf("parent %s: just got SIGUSR1\n", __func__); 
-}
-//-------------------------------------------------------
-
-void handle_SIGUSR2(int sig_num){
-    printf("function %s: just got SIGUSR2\n", __func__);
-	printf("pid=%d, parent process SIG2\n", getpid());
-}
-//-------------------------------------------------------
-
 void set_sig_handlers()
 {
 	struct sigaction act;
@@ -263,10 +242,13 @@ void set_sig_handlers()
     	perror("Failed to sigemptyset");
 	}
 	act.sa_flags = SA_RESTART;
-	act.sa_handler = handle_SIGUSR1;
-	sigaction(SIGUSR1, &act, NULL);
-	act.sa_handler = handle_SIGUSR2;
-	sigaction(SIGUSR2, &act, NULL);
+	act.sa_handler = SIG_IGN;
+	if (sigaction(SIGUSR1, &act, NULL) == -1) {
+		perror("Failed to sigaction\n");
+	}
+	if (sigaction(SIGUSR2, &act, NULL) == -1) {
+		perror("Failed to sigaction\n");
+	}
 }
 
 //------------------------------------------------//
@@ -274,26 +256,33 @@ void set_sig_handlers()
 void handle_char_signals(int * pids)
 {
 	char c;
-	FILE * charIn = fopen(CHARS_IN, "r");
-	while ((c = fgetc(charIn)) != EOF)
+	int charIn = open_file(CHARS_IN);
+	while (read(charIn,&c,1) > 0)
     {
         if(c == 'q')
 		{
-			kill(pids[0], SIGUSR1);
-			sleep_for_nano();
+			sending_signal_SIGUSR1_to_process(0, pids);
 		}
 		else if(c == 'h')
 		{
-			kill(pids[1], SIGUSR1);
-			sleep_for_nano();
+			sending_signal_SIGUSR1_to_process(1, pids);
 		}	
 		else if(c == 'o')
 		{
-			kill(pids[2], SIGUSR1);
-			sleep_for_nano();
+			sending_signal_SIGUSR1_to_process(2, pids);
 		}
     }
+	close(charIn);
 }
+
+//------------------------------------------------
+
+void sending_signal_SIGUSR1_to_process(int i, int* pids)
+{
+	kill(pids[i], SIGUSR1);
+	sleep_for_nano();
+}
+
 //------------------------------------------------
 
 void send_SIGUSR2_to_all_processes(int* pids)
@@ -301,13 +290,20 @@ void send_SIGUSR2_to_all_processes(int* pids)
 	for(int i=0; i<3;i++)
 	{
 		kill(pids[i], SIGUSR2);
+		sleep_for_nano();
 	}
 }
 
 void wait_to_all_processes(int* pids)
 {
+	/*while(wait(NULL) > 0)
+	{
+		waitpid(pids[i],NULL,0);
+	}*/
+
 	for(int i=0; i<3;i++)
 	{
-		waitpid(pids[i], NULL, 0);
+		waitpid(pids[i],NULL,0);
 	}
+
 }
