@@ -130,7 +130,14 @@ int main()
 	set_sig_handlers(); 
     linkedList = read_polygons_and_add_to_list();
 	currNode = linkedList.head;
-	while(1);
+	while(1)
+	{
+		if(getppid() == 1)
+		{
+			exit(0);
+		}
+		pause();
+	}
 }
 
 //-------------------------------------------------------
