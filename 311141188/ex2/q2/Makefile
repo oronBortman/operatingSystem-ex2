@@ -3,17 +3,19 @@ CFLAGS = -g -Wall
 LDFLAGS = -lm # not really needed for this exercise
 //CC = gcc -std=c99
 ECHO = echo "going to compile for target $@"
-PROG = ex2_q2
+PROG1 = ex2_q2
+PROG2 = hello
+PROGS = $(PROG1) $(PROG2)
 
-all: $(PROG) hello test
+all: $(PROGS) test
 
-$(PROG): ex2_q2.o
-	$(CC) $(CFLAGS) ex2_q2.o  -o $(PROG) $(LDFLAGS)
+$(PROG1): ex2_q2.o
+	$(CC) $(CFLAGS) ex2_q2.o  -o $(PROG1) $(LDFLAGS)
 
-test:
+test: $(PROGS) 
 	# make sure you have input file in.txt.
 	# so the following command works
-	./$(PROG) 5 300 ali beni gadi
+	./$(PROG1) 5 300 ali beni gadi
 
 ex2_q2.o:  ex2_q2.h ex2_q2.c
 	$(CC) $(CFLAGS) -c ex2_q2.c $(LDFLAGS)
@@ -22,4 +24,4 @@ hello.o:  hello.h hello.c
 	$(CC) $(CFLAGS) -c hello.c $(LDFLAGS)
 
 clean: 
-	$(RM) *.o *~ $(PROG) *.log
+	$(RM) *.o *~ $(PROGS) *.log

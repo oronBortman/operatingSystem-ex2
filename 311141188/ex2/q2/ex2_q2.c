@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 
     if (fork() == 0)
     {
-      char * logFileName;
+      char * logFileName[1000];
       strcpy(logFileName, my_argv[2]);
       strcat(logFileName,".log");
       close(1);
