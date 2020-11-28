@@ -182,9 +182,7 @@ void sleep_for_nano()
 void call_to_all_helpers(int * pids)
 {
 	char* prog_name = HELPER;
-	int temp_stdout = dup(1);
-	int temp_stdin = dup(0);
-	
+
 	for(int i=0; i<3; i++)
 	{
 		if((pids[i] = fork()) == 0)
